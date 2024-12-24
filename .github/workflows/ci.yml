@@ -15,19 +15,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Клонируем репозиторий
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Сборка Docker-образа для Backend
       - name: Build Backend Docker Image
         run: |
           docker build -t crypto_exchange-backend:latest -f dockerfile.backend .
           docker save crypto_exchange-backend:latest > backend-docker-image.tar
 
+      # Сборка Docker-образа для Frontend
       - name: Build Frontend Docker Image
         run: |
           docker build -t crypto_exchange-frontend:latest -f frontend/dockerfile.frontend .
           docker save crypto_exchange-frontend:latest > frontend-docker-image.tar
 
+      # Загрузка Docker-образов как артефактов
       - name: Upload Docker Image Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -42,16 +46,20 @@ jobs:
     needs: build
 
     steps:
+      # Клонируем репозиторий
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Загрузка артефактов Docker-образов
       - name: Download Docker Image Artifacts
         uses: actions/download-artifact@v3
         with:
           name: docker-images
 
+      # Загрузка Backend Docker Image
       - name: Load Backend Docker Image
         run: docker load < backend-docker-image.tar
 
+      # Загрузка Frontend Docker Image
       - name: Load Frontend Docker Image
         run: docker load < frontend-docker-image.tar
