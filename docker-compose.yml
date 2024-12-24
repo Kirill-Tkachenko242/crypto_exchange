@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # Сервис для бэкенда
+  app:
+    build: 
+      context: .
+      dockerfile: dockerfile.backend
+    ports:
+      - "8080:8080"  # Открываем порт для бэкенда
+    environment:
+      - SERVER_PORT=8080
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=yourpassword
+      - DB_NAME=crypto_exchange_db
+      - JWT_SECRET_KEY=your_secret_key
+      - API_KEY=your_api_key
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  # Сервис для базы данных
+  db:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: crypto_exchange_db
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  # Сервис для фронтенда
+  frontend:
+    build:
+      context: ./frontend  # Путь к папке с фронтендом
+      dockerfile: dockerfile.frontend  # Указываем имя Dockerfile для фронтенда
+    ports:
+      - "80:80"  # Открываем порт 3000 для фронтенда
+    networks:
+      - app-network
+    depends_on:
+      - app  # Фронтенд должен запускаться после бэкенда
+
+volumes:
+  db-data:
+
+networks:
+  app-network:
