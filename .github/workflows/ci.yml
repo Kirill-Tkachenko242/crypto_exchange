@@ -10,7 +10,6 @@ on:
 
 jobs:
 
-
   build:
     name: Build Docker Images
     runs-on: ubuntu-latest
@@ -56,5 +55,3 @@ jobs:
 
       - name: Load Frontend Docker Image
         run: docker load < frontend-docker-image.tar
-
-
